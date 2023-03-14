@@ -10,13 +10,13 @@ export const verifyToken = (req, res, next) => {
   const token = req.headers['x-access-token'];
 
   if (!token) {
-    next(new AuthorizationError());
+    next(new AuthorizationError('No token provided'));
     return;
   }
 
   jwt.verify(token, JWT_SECRET_KEY, (err) => {
     if (err) {
-      next(new AuthenticationError());
+      next(new AuthenticationError('Invalid token'));
       return;
     }
     res.status(StatusCodes.OK).send(ReasonPhrases.OK);

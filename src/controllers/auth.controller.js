@@ -5,7 +5,7 @@ import { JWT_EXPIRE_TIME, JWT_SECRET_KEY } from '../config/config.js';
 import { StatusCodes } from 'http-status-codes';
 import { AuthorizationError, NotFoundError } from '../errors/appErrors.js';
 
-export const signup = (req, res) => {
+export const signup = (req, res, next) => {
   const user = new User({
     username: req.body.username,
     email: req.body.email,
@@ -14,7 +14,8 @@ export const signup = (req, res) => {
 
   user.save((err) => {
     if (err) {
-      throw new Error(err.message);
+      next(new Error(err.message));
+      return;
     }
   });
 
@@ -25,16 +26,18 @@ export const signup = (req, res) => {
   });
 };
 
-export const signin = (req, res) => {
+export const signin = (req, res, next) => {
   User.findOne({
     email: req.body.email,
   }).exec((err, user) => {
     if (err) {
-      throw new Error(err.message);
+      next(new Error(err.message));
+      return;
     }
 
     if (!user) {
-      throw new NotFoundError('User Not found');
+      next(new NotFoundError('User Not found'));
+      return;
     }
 
     const passwordIsValid = bcrypt.compareSync(
@@ -43,7 +46,8 @@ export const signin = (req, res) => {
     );
 
     if (!passwordIsValid) {
-      throw new AuthorizationError('Invalid Password');
+      next(new AuthorizationError('Invalid Password'));
+      return;
     }
 
     const token = jwt.sign({ id: user.id }, JWT_SECRET_KEY, {

@@ -1,0 +1,119 @@
+openapi: 3.0.0
+info:
+  title: Angular Films App
+  description: The backend part of "Angular Films App" task
+  version: 1.0.0
+
+servers:
+  - url: https://films-app-be.onrender.com
+  - url: /
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    Auth:
+      type: object
+      properties:
+        id:
+          type: string
+        accessToken:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - Sign Up
+      security: []
+      summary: Create a new user
+      description: Creates a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                username:
+                  type: string
+                  description: User name
+                email:
+                  type: string
+                  description: E-mail
+                id:
+                  type: string
+                  description: User id
+      responses:
+        200:
+          description: Successful creation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        417:
+          description: User with this e-mail already exists
+  /auth/signin:
+    post:
+      tags:
+        - Sign In
+      security: []
+      summary: Sign in
+      description: Logins a user and returns a JWT-token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                email:
+                  type: string
+                  description: E-mail
+                password:
+                  type: string
+                  description: Password
+      responses:
+        200:
+          description: Successful login.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auth'
+        401:
+          description: Incorrect password
+        404:
+          description: Incorrect e-mail
+  /auth/jwt-check:
+    post:
+      tags:
+        - Verify JWT
+      security: []
+      summary: Verify access token
+      description: Checks if JWT-token is valid
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            format: JWT
+      responses:
+        200:
+          description: JWT is valid.
+        401:
+          description: No token provided
+        403:
+          description: Invalid token
