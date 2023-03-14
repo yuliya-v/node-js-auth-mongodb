@@ -13,7 +13,7 @@ components:
     User:
       type: object
       properties:
-        name:
+        username:
           type: string
         email:
           type: string
@@ -44,25 +44,22 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              title: example
-              properties:
-                username:
-                  type: string
-                  description: User name
-                email:
-                  type: string
-                  description: E-mail
-                id:
-                  type: string
-                  description: User id
+              $ref: '#/components/schemas/User'
       responses:
         200:
           description: Successful creation.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                type: object
+                title: example
+                properties:
+                  username:
+                    type: string
+                  email:
+                    type: string
+                  id:
+                    type: string
         417:
           description: User with this e-mail already exists
   /auth/signin:
