@@ -6,17 +6,19 @@ import {
   AuthorizationError,
 } from '../errors/appErrors.js';
 
-export const verifyToken = (req, res) => {
+export const verifyToken = (req, res, next) => {
   const token = req.headers['x-access-token'];
 
   if (!token) {
-    throw new AuthorizationError();
+    next(new AuthorizationError());
+    return;
   }
 
   jwt.verify(token, JWT_SECRET_KEY, (err) => {
     if (err) {
-      throw new AuthenticationError();
+      next(new AuthenticationError());
+      return;
     }
-    return res.status(StatusCodes.OK).send(ReasonPhrases.OK);
+    res.status(StatusCodes.OK).send(ReasonPhrases.OK);
   });
 };
